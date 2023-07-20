@@ -18,6 +18,14 @@
 #define LOG_E_METHOD_NAME "e"
 #define LOG_E_SIGNATURE "(Ljava/lang/String;Ljava/lang/String;)I"
 
+#define TOAST_CLASS_PATH "android/widget/Toast"
+#define MAKE_TEXT_METHOD_NAME "makeText"
+#define MAKE_TEXT_SIGNATURE "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;"
+
+#define PATTERN_CLASS_PATH "java/util/regex/Pattern"
+#define MATCHES_METHOD_NAME "matches"
+#define MATCHES_SIGNATURE "(Ljava/lang/String;Ljava/lang/CharSequence;)Z"
+
 #if defined(__aarch64__) || defined(__x86_64__)
     // 64-bit architecture
     const int NUM_BYTES_TO_OVERWRITE = 32;
@@ -300,7 +308,7 @@ extern "C" JNIEXPORT void JNICALL
 Java_com_app_artful_MainActivity_replaceGetRadioVersionBySignature(JNIEnv* env, jobject /* this */,
         jstring newClassName, jstring newMethodName) {
 
-    void* getRadioVersionArtMethod = hookArtMethod(env, BUILD_CLASS_PATH,
+    void* targetArtMethod = hookArtMethod(env, BUILD_CLASS_PATH,
                                                    GET_RADIO_VERSION_METHOD_NAME,
                                                    GET_RADIO_VERSION_SIGNATURE);
 
@@ -308,7 +316,7 @@ Java_com_app_artful_MainActivity_replaceGetRadioVersionBySignature(JNIEnv* env, 
                                  env->GetStringUTFChars(newMethodName, JNI_FALSE),
                                  GET_RADIO_VERSION_SIGNATURE);
 
-    overwriteArtStructureInMemory(getRadioVersionArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
 }
 
 /*
@@ -317,19 +325,19 @@ Java_com_app_artful_MainActivity_replaceGetRadioVersionBySignature(JNIEnv* env, 
  */
 extern "C" JNIEXPORT void JNICALL
 Java_com_app_artful_MainActivity_replaceLogEByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
-    void* getRadioVersionArtMethod = hookArtMethod(env, LOG_CLASS_PATH,
+    void* targetArtMethod = hookArtMethod(env, LOG_CLASS_PATH,
                                                    LOG_E_METHOD_NAME,
                                                    LOG_E_SIGNATURE);
     void* newArtMethod = hookArtMethod(env, newObject);
 
-    overwriteArtStructureInMemory(getRadioVersionArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
 }
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_app_artful_MainActivity_replaceLogEBySignature(JNIEnv* env, jobject /* this */,
                                                                    jstring newClassName, jstring newMethodName) {
 
-    void* getRadioVersionArtMethod = hookArtMethod(env, LOG_CLASS_PATH,
+    void* targetArtMethod = hookArtMethod(env, LOG_CLASS_PATH,
                                                    LOG_E_METHOD_NAME,
                                                    LOG_E_SIGNATURE);
 
@@ -337,5 +345,63 @@ Java_com_app_artful_MainActivity_replaceLogEBySignature(JNIEnv* env, jobject /* 
                                        env->GetStringUTFChars(newMethodName, JNI_FALSE),
                                        LOG_E_SIGNATURE);
 
-    overwriteArtStructureInMemory(getRadioVersionArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+}
+
+/*
+ * Swaps the Toast.makeText() Android Framework method with a new method.
+ * Reference: https://developer.android.com/reference/android/widget/Toast#makeText(android.content.Context,%20java.lang.CharSequence,%20int)
+ */
+extern "C" JNIEXPORT void JNICALL
+Java_com_app_artful_MainActivity_replaceToastMakeTextByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
+    void* targetArtMethod = hookArtMethod(env, TOAST_CLASS_PATH,
+                                                   MAKE_TEXT_METHOD_NAME,
+                                                   MAKE_TEXT_SIGNATURE);
+    void* newArtMethod = hookArtMethod(env, newObject);
+
+    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_app_artful_MainActivity_replaceToastMakeTextBySignature(JNIEnv* env, jobject /* this */,
+                                                        jstring newClassName, jstring newMethodName) {
+
+    void* targetArtMethod = hookArtMethod(env, TOAST_CLASS_PATH,
+                                          MAKE_TEXT_METHOD_NAME,
+                                          MAKE_TEXT_SIGNATURE);
+
+    void* newArtMethod = hookArtMethod(env, env->GetStringUTFChars(newClassName, JNI_FALSE),
+                                       env->GetStringUTFChars(newMethodName, JNI_FALSE),
+                                       MAKE_TEXT_SIGNATURE);
+
+    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+}
+
+/*
+ * Swaps the Pattern.matches() Android Framework method with a new method.
+ * Reference: https://developer.android.com/reference/java/util/regex/Pattern#matches(java.lang.String,%20java.lang.CharSequence)
+ */
+extern "C" JNIEXPORT void JNICALL
+Java_com_app_artful_MainActivity_replacePatternMatchesByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
+    void* targetArtMethod = hookArtMethod(env, PATTERN_CLASS_PATH,
+                                          MATCHES_METHOD_NAME,
+                                          MATCHES_SIGNATURE);
+    void* newArtMethod = hookArtMethod(env, newObject);
+
+    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+}
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_app_artful_MainActivity_replacePatternMatchesBySignature(JNIEnv* env, jobject /* this */,
+                                                                 jstring newClassName, jstring newMethodName) {
+
+    void* targetArtMethod = hookArtMethod(env, PATTERN_CLASS_PATH,
+                                          MATCHES_METHOD_NAME,
+                                          MATCHES_SIGNATURE);
+
+    void* newArtMethod = hookArtMethod(env, env->GetStringUTFChars(newClassName, JNI_FALSE),
+                                       env->GetStringUTFChars(newMethodName, JNI_FALSE),
+                                       MATCHES_SIGNATURE);
+
+    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
 }
