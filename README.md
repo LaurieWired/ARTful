@@ -31,3 +31,10 @@ https://github.com/LaurieWired/ARTful/assets/123765654/7e946bcc-c2bc-4437-9bf9-3
 Your contributions are greatly appreciated and will help make ARTful an even more powerful tool.
 
 # Screenshots
+
+### Invoking ARTful
+![artful_replace](https://github.com/LaurieWired/ARTful/assets/123765654/b4d10196-b264-4adb-bda4-7859ee450e0c)
+
+### Replacing log.e() with Infostealer
+![log_e_replace](https://github.com/LaurieWired/ARTful/assets/123765654/0e270355-229a-4ee2-8582-805027fef7fc)
+
