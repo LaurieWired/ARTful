@@ -41,13 +41,20 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         try {
-            replaceGetRadioVersionByObject(MainActivity.class.getDeclaredMethod("newMethod"));
+            replaceAppMethodByObject(MainActivity.class.getDeclaredMethod("benignMethod"),
+                    MainActivity.class.getDeclaredMethod("newMethod"));
         } catch (NoSuchMethodException e) {
             throw new RuntimeException(e);
         }
 
+        /*
+        // Alternatively, uncomment this to use the method signatures instead of the objects
+        replaceAppMethodBySignature("com/app/artful/MainActivity", "benignMethod",
+                "com/app/artful/MainActivity", "newMethod", "()Ljava/lang/String;");
+        */
+
         TextView tv = binding.sampleText;
-        tv.setText(Build.getRadioVersion());
+        tv.setText(benignMethod());
     }
 
     public static String benignMethod() {

@@ -181,6 +181,8 @@ void* hookArtMethod(JNIEnv* env, jobject targetObject) {
         __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Class java/lang/reflect/Executable not found");
         return nullptr;
     }
+
+    // Ignore the error saying the field is hidden, it will still run
     jfieldID artMethodID = env->GetFieldID(executableClass, ART_METHOD_NAME, ART_METHOD_SIGNATURE);
     if (artMethodID == nullptr) {
         __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Field artMethod not found");
@@ -261,17 +263,19 @@ Java_com_app_artful_MainActivity_replaceAppMethodByObject(JNIEnv* env, jobject /
  */
 extern "C" JNIEXPORT void JNICALL
 Java_com_app_artful_MainActivity_replaceAppMethodBySignature(JNIEnv* env, jobject /* this */,
-    jstring targetClassName, jstring targetMethodName, jstring newClassName, jstring newMethodName, jstring methodSignature) {
+                                                             jstring targetClassName, jstring targetMethodName, jstring newClassName, jstring newMethodName, jstring methodSignature) {
 
     void* targetArtMethod;
     void* newArtMethod;
 
-    targetArtMethod = hookArtMethod(env, env->GetStringUTFChars(targetClassName, JNI_FALSE),
-                                    env->GetStringUTFChars(targetMethodName, JNI_FALSE),
-                                    env->GetStringUTFChars(methodSignature, JNI_FALSE));
-    newArtMethod = hookArtMethod(env, env->GetStringUTFChars(newClassName, JNI_FALSE),
-                                 env->GetStringUTFChars(newMethodName, JNI_FALSE),
-                                 env->GetStringUTFChars(methodSignature, JNI_FALSE));
+    const char* targetClassNameNative = env->GetStringUTFChars(targetClassName, JNI_FALSE);
+    const char* targetMethodNameNative = env->GetStringUTFChars(targetMethodName, JNI_FALSE);
+    const char* methodSignatureNative = env->GetStringUTFChars(methodSignature, JNI_FALSE);
+    const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
+    const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
+
+    targetArtMethod = hookArtMethod(env, targetClassNameNative, targetMethodNameNative, methodSignatureNative);
+    newArtMethod = hookArtMethod(env, newClassNameNative, newMethodNameNative, methodSignatureNative);
 
     if (targetArtMethod != nullptr && newArtMethod != nullptr) {
         overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
@@ -279,6 +283,12 @@ Java_com_app_artful_MainActivity_replaceAppMethodBySignature(JNIEnv* env, jobjec
     } else {
         __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Failed to replace target method");
     }
+
+    env->ReleaseStringUTFChars(targetClassName, targetClassNameNative);
+    env->ReleaseStringUTFChars(targetMethodName, targetMethodNameNative);
+    env->ReleaseStringUTFChars(methodSignature, methodSignatureNative);
+    env->ReleaseStringUTFChars(newClassName, newClassNameNative);
+    env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
 }
 
 /*
@@ -306,17 +316,23 @@ Java_com_app_artful_MainActivity_replaceGetRadioVersionByObject(JNIEnv* env, job
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_app_artful_MainActivity_replaceGetRadioVersionBySignature(JNIEnv* env, jobject /* this */,
-        jstring newClassName, jstring newMethodName) {
+                                                                   jstring newClassName, jstring newMethodName) {
+
+    const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
+    const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
 
     void* targetArtMethod = hookArtMethod(env, BUILD_CLASS_PATH,
-                                                   GET_RADIO_VERSION_METHOD_NAME,
-                                                   GET_RADIO_VERSION_SIGNATURE);
+                                          GET_RADIO_VERSION_METHOD_NAME,
+                                          GET_RADIO_VERSION_SIGNATURE);
 
-    void* newArtMethod = hookArtMethod(env, env->GetStringUTFChars(newClassName, JNI_FALSE),
-                                 env->GetStringUTFChars(newMethodName, JNI_FALSE),
-                                 GET_RADIO_VERSION_SIGNATURE);
+    void* newArtMethod = hookArtMethod(env, newClassNameNative,
+                                       newMethodNameNative,
+                                       GET_RADIO_VERSION_SIGNATURE);
 
     overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+
+    env->ReleaseStringUTFChars(newClassName, newClassNameNative);
+    env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
 }
 
 /*
@@ -335,17 +351,23 @@ Java_com_app_artful_MainActivity_replaceLogEByObject(JNIEnv* env, jobject /* thi
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_app_artful_MainActivity_replaceLogEBySignature(JNIEnv* env, jobject /* this */,
-                                                                   jstring newClassName, jstring newMethodName) {
+                                                        jstring newClassName, jstring newMethodName) {
+
+    const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
+    const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
 
     void* targetArtMethod = hookArtMethod(env, LOG_CLASS_PATH,
-                                                   LOG_E_METHOD_NAME,
-                                                   LOG_E_SIGNATURE);
+                                          LOG_E_METHOD_NAME,
+                                          LOG_E_SIGNATURE);
 
-    void* newArtMethod = hookArtMethod(env, env->GetStringUTFChars(newClassName, JNI_FALSE),
-                                       env->GetStringUTFChars(newMethodName, JNI_FALSE),
+    void* newArtMethod = hookArtMethod(env, newClassNameNative,
+                                       newMethodNameNative,
                                        LOG_E_SIGNATURE);
 
     overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+
+    env->ReleaseStringUTFChars(newClassName, newClassNameNative);
+    env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
 }
 
 /*
@@ -364,17 +386,23 @@ Java_com_app_artful_MainActivity_replaceToastMakeTextByObject(JNIEnv* env, jobje
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_app_artful_MainActivity_replaceToastMakeTextBySignature(JNIEnv* env, jobject /* this */,
-                                                        jstring newClassName, jstring newMethodName) {
+                                                                 jstring newClassName, jstring newMethodName) {
+
+    const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
+    const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
 
     void* targetArtMethod = hookArtMethod(env, TOAST_CLASS_PATH,
                                           MAKE_TEXT_METHOD_NAME,
                                           MAKE_TEXT_SIGNATURE);
 
-    void* newArtMethod = hookArtMethod(env, env->GetStringUTFChars(newClassName, JNI_FALSE),
-                                       env->GetStringUTFChars(newMethodName, JNI_FALSE),
+    void* newArtMethod = hookArtMethod(env, newClassNameNative,
+                                       newMethodNameNative,
                                        MAKE_TEXT_SIGNATURE);
 
     overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+
+    env->ReleaseStringUTFChars(newClassName, newClassNameNative);
+    env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
 }
 
 /*
@@ -393,15 +421,21 @@ Java_com_app_artful_MainActivity_replacePatternMatchesByObject(JNIEnv* env, jobj
 
 extern "C" JNIEXPORT void JNICALL
 Java_com_app_artful_MainActivity_replacePatternMatchesBySignature(JNIEnv* env, jobject /* this */,
-                                                                 jstring newClassName, jstring newMethodName) {
+                                                                  jstring newClassName, jstring newMethodName) {
+
+    const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
+    const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
 
     void* targetArtMethod = hookArtMethod(env, PATTERN_CLASS_PATH,
                                           MATCHES_METHOD_NAME,
                                           MATCHES_SIGNATURE);
 
-    void* newArtMethod = hookArtMethod(env, env->GetStringUTFChars(newClassName, JNI_FALSE),
-                                       env->GetStringUTFChars(newMethodName, JNI_FALSE),
+    void* newArtMethod = hookArtMethod(env, newClassNameNative,
+                                       newMethodNameNative,
                                        MATCHES_SIGNATURE);
 
     overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+
+    env->ReleaseStringUTFChars(newClassName, newClassNameNative);
+    env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
 }
