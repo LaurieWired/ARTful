@@ -13,8 +13,6 @@ ARTful is a native Android library the allows developers to modify the Android R
 https://github.com/LaurieWired/ARTful/assets/123765654/7e946bcc-c2bc-4437-9bf9-3ce14103c932
 
 # Installation
-This code is based on the latest release of JADX version 1.4.6. It contains an additional plugin to enable dynamic Java coding using all of the standard Java libraries as well as the JADX libs and APIs.
-
 You can import ARTful as a precompiled native binary or build from the example ARTful application to start your runtime manipulation. Follow the guides in the wiki if you need help importing your libraries.
 
 # Usage
