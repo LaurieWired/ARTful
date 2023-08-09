@@ -12,13 +12,11 @@ ARTful is a native Android library the allows developers to modify the Android R
 
 https://github.com/LaurieWired/ARTful/assets/123765654/7e946bcc-c2bc-4437-9bf9-3ce14103c932
 
-# Installation
-You can import ARTful as a precompiled native binary or build from the example ARTful application to start your runtime manipulation. Follow the guides in the wiki if you need help importing your libraries.
-
 # Usage
 
-### Check out the **[Wiki](https://github.com/LaurieWired/ARTful/wiki/Usage)** for usage instructions and script examples.
+### Check out the **[Wiki](https://github.com/LaurieWired/ARTful/wiki/Usage)** for installation, usage instructions, and script examples!
 
+You can import ARTful as a precompiled native binary or build from the example ARTful application to customize your runtime manipulation.
 
 # Contribute
 - Make a pull request
