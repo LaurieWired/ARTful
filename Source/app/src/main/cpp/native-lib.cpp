@@ -456,8 +456,22 @@ registerNativeMethods(JNIEnv* env, jclass /* this */, jclass targetClass) {
             {"replacePatternMatchesBySignature", "(Ljava/lang/String;Ljava/lang/String;)V", (void*) replacePatternMatchesBySignature}
     };
 
-    if (env->RegisterNatives(targetClass, methods, sizeof(methods) / sizeof(JNINativeMethod)) != JNI_OK) {
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Error registering native methods");
+    for (int i = 0; i < sizeof(methods) / sizeof(JNINativeMethod); i++) {
+        jmethodID methodId = env->GetMethodID(targetClass, methods[i].name, methods[i].signature);
+
+        // If an exception occurred, likely a NoSuchMethodError, skip this iteration
+        if (env->ExceptionCheck()) {
+            env->ExceptionClear();
+            continue;
+        }
+
+        // Only register the method if it exists in the target Java class
+        if (methodId != nullptr) {
+            __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Registering native method: %s", methods[i].name);
+            if (env->RegisterNatives(targetClass, &methods[i], 1) != JNI_OK) {
+                __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Error registering native method: %s", methods[i].name);
+            }
+        }
     }
 }
 
@@ -483,4 +497,3 @@ JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 
     return JNI_VERSION_1_6;
 }
-
