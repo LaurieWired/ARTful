@@ -27,11 +27,11 @@
 #define MATCHES_SIGNATURE "(Ljava/lang/String;Ljava/lang/CharSequence;)Z"
 
 #if defined(__aarch64__) || defined(__x86_64__)
-    // 64-bit architecture
+// 64-bit architecture
     const int NUM_BYTES_TO_OVERWRITE = 32;
 #else
-    // 32-bit architecture
-    const int NUM_BYTES_TO_OVERWRITE = 24;
+// 32-bit architecture
+const int NUM_BYTES_TO_OVERWRITE = 24;
 #endif
 
 
@@ -83,15 +83,15 @@ public:
     static constexpr uint32_t kRuntimeMethodDexMethodIndex = 0xFFFFFFFF;
 
     static void printOffsets() {
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of declaring_class_: %zu", offsetof(ArtMethod, declaring_class_));
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of access_flags_: %zu", offsetof(ArtMethod, access_flags_));
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of dex_method_index_: %zu", offsetof(ArtMethod, dex_method_index_));
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of method_index_: %zu", offsetof(ArtMethod, method_index_));
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of hotness_count_: %zu", offsetof(ArtMethod, hotness_count_));
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of imt_index_: %zu", offsetof(ArtMethod, imt_index_));
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of ptr_sized_fields_: %zu", offsetof(ArtMethod, ptr_sized_fields_));
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of ptr_sized_fields_.data_: %zu", offsetof(ArtMethod::PtrSizedFields, data_));
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Offset of ptr_sized_fields_.entry_point_from_quick_compiled_code_: %zu", offsetof(ArtMethod::PtrSizedFields, entry_point_from_quick_compiled_code_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of declaring_class_: %zu", offsetof(ArtMethod, declaring_class_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of access_flags_: %zu", offsetof(ArtMethod, access_flags_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of dex_method_index_: %zu", offsetof(ArtMethod, dex_method_index_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of method_index_: %zu", offsetof(ArtMethod, method_index_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of hotness_count_: %zu", offsetof(ArtMethod, hotness_count_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of imt_index_: %zu", offsetof(ArtMethod, imt_index_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of ptr_sized_fields_: %zu", offsetof(ArtMethod, ptr_sized_fields_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of ptr_sized_fields_.data_: %zu", offsetof(ArtMethod::PtrSizedFields, data_));
+        __android_log_print(ANDROID_LOG_INFO, "ARTful", "Offset of ptr_sized_fields_.entry_point_from_quick_compiled_code_: %zu", offsetof(ArtMethod::PtrSizedFields, entry_point_from_quick_compiled_code_));
 
     }
 
@@ -242,7 +242,7 @@ void* hookArtMethod(JNIEnv* env, const char* className, const char* methodName, 
  * Swaps two methods from the user's app by Java object
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replaceAppMethodByObject(JNIEnv* env, jobject /* this */, jobject targetMethod, jobject newMethod) {
+replaceAppMethodByObject(JNIEnv* env, jobject /* this */, jobject targetMethod, jobject newMethod) {
     void* targetArtMethod;
     void* newArtMethod;
 
@@ -262,8 +262,8 @@ Java_com_app_artful_MainActivity_replaceAppMethodByObject(JNIEnv* env, jobject /
  * Note: Signature is the same since it must match for swapping to work.
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replaceAppMethodBySignature(JNIEnv* env, jobject /* this */,
-                                                             jstring targetClassName, jstring targetMethodName, jstring newClassName, jstring newMethodName, jstring methodSignature) {
+replaceAppMethodBySignature(JNIEnv* env, jobject /* this */,
+                            jstring targetClassName, jstring targetMethodName, jstring newClassName, jstring newMethodName, jstring methodSignature) {
 
     void* targetArtMethod;
     void* newArtMethod;
@@ -295,7 +295,7 @@ Java_com_app_artful_MainActivity_replaceAppMethodBySignature(JNIEnv* env, jobjec
  * Prints offsets withing the native runtime structure of ArtMethod
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_printArtMethodOffsets(JNIEnv* env, jobject /* this */) {
+printArtMethodOffsets(JNIEnv* env, jobject /* this */) {
     ArtMethod artMethod;
     artMethod.printOffsets();
 }
@@ -305,7 +305,7 @@ Java_com_app_artful_MainActivity_printArtMethodOffsets(JNIEnv* env, jobject /* t
  * Reference: https://developer.android.com/reference/android/os/Build#getRadioVersion()
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replaceGetRadioVersionByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
+replaceGetRadioVersionByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
     void* getRadioVersionArtMethod = hookArtMethod(env, BUILD_CLASS_PATH,
                                                    GET_RADIO_VERSION_METHOD_NAME,
                                                    GET_RADIO_VERSION_SIGNATURE);
@@ -315,8 +315,8 @@ Java_com_app_artful_MainActivity_replaceGetRadioVersionByObject(JNIEnv* env, job
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replaceGetRadioVersionBySignature(JNIEnv* env, jobject /* this */,
-                                                                   jstring newClassName, jstring newMethodName) {
+replaceGetRadioVersionBySignature(JNIEnv* env, jobject /* this */,
+                                  jstring newClassName, jstring newMethodName) {
 
     const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
     const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
@@ -340,18 +340,18 @@ Java_com_app_artful_MainActivity_replaceGetRadioVersionBySignature(JNIEnv* env, 
  * Reference: https://developer.android.com/reference/android/util/Log#e(java.lang.String,%20java.lang.String)
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replaceLogEByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
+replaceLogEByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
     void* targetArtMethod = hookArtMethod(env, LOG_CLASS_PATH,
-                                                   LOG_E_METHOD_NAME,
-                                                   LOG_E_SIGNATURE);
+                                          LOG_E_METHOD_NAME,
+                                          LOG_E_SIGNATURE);
     void* newArtMethod = hookArtMethod(env, newObject);
 
     overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replaceLogEBySignature(JNIEnv* env, jobject /* this */,
-                                                        jstring newClassName, jstring newMethodName) {
+replaceLogEBySignature(JNIEnv* env, jobject /* this */,
+                       jstring newClassName, jstring newMethodName) {
 
     const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
     const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
@@ -375,18 +375,18 @@ Java_com_app_artful_MainActivity_replaceLogEBySignature(JNIEnv* env, jobject /* 
  * Reference: https://developer.android.com/reference/android/widget/Toast#makeText(android.content.Context,%20java.lang.CharSequence,%20int)
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replaceToastMakeTextByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
+replaceToastMakeTextByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
     void* targetArtMethod = hookArtMethod(env, TOAST_CLASS_PATH,
-                                                   MAKE_TEXT_METHOD_NAME,
-                                                   MAKE_TEXT_SIGNATURE);
+                                          MAKE_TEXT_METHOD_NAME,
+                                          MAKE_TEXT_SIGNATURE);
     void* newArtMethod = hookArtMethod(env, newObject);
 
     overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replaceToastMakeTextBySignature(JNIEnv* env, jobject /* this */,
-                                                                 jstring newClassName, jstring newMethodName) {
+replaceToastMakeTextBySignature(JNIEnv* env, jobject /* this */,
+                                jstring newClassName, jstring newMethodName) {
 
     const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
     const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
@@ -410,7 +410,7 @@ Java_com_app_artful_MainActivity_replaceToastMakeTextBySignature(JNIEnv* env, jo
  * Reference: https://developer.android.com/reference/java/util/regex/Pattern#matches(java.lang.String,%20java.lang.CharSequence)
  */
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replacePatternMatchesByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
+replacePatternMatchesByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
     void* targetArtMethod = hookArtMethod(env, PATTERN_CLASS_PATH,
                                           MATCHES_METHOD_NAME,
                                           MATCHES_SIGNATURE);
@@ -420,8 +420,8 @@ Java_com_app_artful_MainActivity_replacePatternMatchesByObject(JNIEnv* env, jobj
 }
 
 extern "C" JNIEXPORT void JNICALL
-Java_com_app_artful_MainActivity_replacePatternMatchesBySignature(JNIEnv* env, jobject /* this */,
-                                                                  jstring newClassName, jstring newMethodName) {
+replacePatternMatchesBySignature(JNIEnv* env, jobject /* this */,
+                                 jstring newClassName, jstring newMethodName) {
 
     const char* newClassNameNative = env->GetStringUTFChars(newClassName, JNI_FALSE);
     const char* newMethodNameNative = env->GetStringUTFChars(newMethodName, JNI_FALSE);
@@ -439,3 +439,48 @@ Java_com_app_artful_MainActivity_replacePatternMatchesBySignature(JNIEnv* env, j
     env->ReleaseStringUTFChars(newClassName, newClassNameNative);
     env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
 }
+
+JNIEXPORT void JNICALL
+registerNativeMethods(JNIEnv* env, jclass /* this */, jclass targetClass) {
+    static JNINativeMethod methods[] = {
+            {"replaceAppMethodByObject", "(Ljava/lang/Object;Ljava/lang/Object;)V", (void*) replaceAppMethodByObject},
+            {"replaceAppMethodBySignature", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void*) replaceAppMethodBySignature},
+            {"printArtMethodOffsets", "()V", (void*) printArtMethodOffsets},
+            {"replaceGetRadioVersionByObject", "(Ljava/lang/Object;)V", (void*) replaceGetRadioVersionByObject},
+            {"replaceGetRadioVersionBySignature", "(Ljava/lang/String;Ljava/lang/String;)V", (void*) replaceGetRadioVersionBySignature},
+            {"replaceLogEByObject", "(Ljava/lang/Object;)V", (void*) replaceLogEByObject},
+            {"replaceLogEBySignature", "(Ljava/lang/String;Ljava/lang/String;)V", (void*) replaceLogEBySignature},
+            {"replaceToastMakeTextByObject", "(Ljava/lang/Object;)V", (void*) replaceToastMakeTextByObject},
+            {"replaceToastMakeTextBySignature", "(Ljava/lang/String;Ljava/lang/String;)V", (void*) replaceToastMakeTextBySignature},
+            {"replacePatternMatchesByObject", "(Ljava/lang/Object;)V", (void*) replacePatternMatchesByObject},
+            {"replacePatternMatchesBySignature", "(Ljava/lang/String;Ljava/lang/String;)V", (void*) replacePatternMatchesBySignature}
+    };
+
+    if (env->RegisterNatives(targetClass, methods, sizeof(methods) / sizeof(JNINativeMethod)) != JNI_OK) {
+        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Error registering native methods");
+    }
+}
+
+
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+    JNIEnv* env;
+    if (vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6) != JNI_OK) {
+        return -1;
+    }
+
+    jclass helperClass = env->FindClass("com/app/artful/ArtfulLibraryHelper");
+    if (!helperClass) {
+        return JNI_ERR;
+    }
+
+    JNINativeMethod helperMethod = {
+            "nativeRegisterNatives", "(Ljava/lang/Class;)V", (void*) registerNativeMethods
+    };
+
+    if (env->RegisterNatives(helperClass, &helperMethod, 1) != JNI_OK) {
+        return JNI_ERR;
+    }
+
+    return JNI_VERSION_1_6;
+}
+

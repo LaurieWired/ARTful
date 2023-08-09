@@ -13,13 +13,6 @@ import com.app.artful.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     // Used to load the 'artful' library on application startup.
-    static {
-        System.loadLibrary("artful");
-    }
-
-    private ActivityMainBinding binding;
-
-    // ARTful library methods
     public native void replaceAppMethodByObject(Object targetObject, Object newObject);
     public native void replaceAppMethodBySignature(String targetClassName, String targetMethodName, String newClassName,
                                                    String newMethodName, String methodSignature);
@@ -33,12 +26,20 @@ public class MainActivity extends AppCompatActivity {
     public native void replacePatternMatchesByObject(Object newObject);
     public native void replacePatternMatchesBySignature(String newClassName, String newMethodName);
 
+    static {
+        System.loadLibrary("artful");
+        ArtfulLibraryHelper.registerNativeMethodsForClass(MainActivity.class);
+    }
+
+    private ActivityMainBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
 
         try {
             replaceAppMethodByObject(MainActivity.class.getDeclaredMethod("benignMethod"),
