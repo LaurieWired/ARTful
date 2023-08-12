@@ -19,7 +19,9 @@
 # Description
 ARTful is a native Android library the allows developers to modify the Android Runtime (ART) on Android 13 + 14. With this tool, you can dynamically change the implementation of any static method within your application or the Android Framework to affect methods called from within your application. This eliminates the requirement of using plaintext references to Android ClassLoaders to execute unexpected code and thwarts Reverse Engineering by entirely removing method cross-references.
 
-https://github.com/LaurieWired/ARTful/assets/123765654/7e946bcc-c2bc-4437-9bf9-3ce14103c932
+
+https://github.com/LaurieWired/ARTful/assets/123765654/67efa9cb-fd51-4d46-a7d9-7a48b38a19e4
+
 
 # Usage
 
