@@ -1,4 +1,4 @@
-![ARTful Logo](https://github.com/LaurieWired/ARTful/assets/123765654/8e907a47-f18c-426d-a6ac-5bcf0ba2d64a)
+![artful logo](https://github.com/LaurieWired/ARTful/assets/123765654/929560f9-ad30-42d3-87f7-13898020d35f)
 
 ---
 
