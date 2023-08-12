@@ -41,8 +41,10 @@ Your contributions are greatly appreciated and will help make ARTful an even mor
 # Screenshots
 
 ### Invoking ARTful
-![artful_replace](https://github.com/LaurieWired/ARTful/assets/123765654/b4d10196-b264-4adb-bda4-7859ee450e0c)
+![invoking_ARTful](https://github.com/LaurieWired/ARTful/assets/123765654/e9d80d58-0a06-43e1-aab9-7c2a6ee4c940)
+
 
 ### Replacing log.e() with Custom Code
-![log_e_replace](https://github.com/LaurieWired/ARTful/assets/123765654/0e270355-229a-4ee2-8582-805027fef7fc)
+![loge_replace](https://github.com/LaurieWired/ARTful/assets/123765654/ce36c1a9-8b25-45de-af67-74dd280568a9)
+
 
