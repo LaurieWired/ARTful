@@ -151,22 +151,6 @@ protected:
 
 
 /*
- * Internal methods section
- */
-
-/*
- * Completely overwrites the targetMethod ArtMethod structure in memory. Any
- *  future calls to targetMethod will trigger newMethod code
- */
-void overwriteArtStructureInMemory(void* targetMethod, void* newMethod) {
-    if (targetMethod != nullptr && newMethod != nullptr) {
-        memcpy(targetMethod, newMethod, NUM_BYTES_TO_OVERWRITE);
-    } else {
-        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Unable to overwrite target method");
-    }
-}
-
-/*
  * Hooks the ArtMethod object for a specified static method.
  *  Overloaded to take in object instead of signature.
  * Note: Method MUST be static.
@@ -233,6 +217,42 @@ void* hookArtMethod(JNIEnv* env, const char* className, const char* methodName, 
     return hookedArtMethod;
 }
 
+size_t artMethodSize = 0;
+
+/*
+ * calculate the size of ArtMethod
+ * because f1 and f2 are in the same ArtMethod Array of class SampleClass, and there are just only two ArtMethods in that array,
+ * the sizeof(ArtMethod) would be f1's offset minors f2's
+ */
+void getArtMethodSize(JNIEnv* env) {
+    artMethodSize = NUM_BYTES_TO_OVERWRITE;
+    size_t f1 = (size_t)hookArtMethod(env, "com/app/artful/SampleClass", "f1", "()V");
+    __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "f1: %d", f1);
+    size_t f2 = (size_t)hookArtMethod(env, "com/app/artful/SampleClass", "f2", "()V");
+    __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "f2: %d", f2);
+    if(f1 != 0 && f2 != 0){
+        artMethodSize = f2 - f1;
+        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "artMethod size: %d", f2 - f1);
+    }
+}
+/*
+ * Internal methods section
+ */
+
+/*
+ * Completely overwrites the targetMethod ArtMethod structure in memory. Any
+ *  future calls to targetMethod will trigger newMethod code
+ */
+void overwriteArtStructureInMemory(JNIEnv* env, void* targetMethod, void* newMethod) {
+    if (targetMethod != nullptr && newMethod != nullptr) {
+        if(artMethodSize == 0) {
+            getArtMethodSize(env);
+        }
+        memcpy(targetMethod, newMethod, artMethodSize);
+    } else {
+        __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Unable to overwrite target method");
+    }
+}
 
 /*
  * External methods section. Callable from Java and to be part of ARTful library.
@@ -250,7 +270,7 @@ replaceAppMethodByObject(JNIEnv* env, jobject /* this */, jobject targetMethod, 
     newArtMethod = hookArtMethod(env, newMethod);
 
     if (targetArtMethod != nullptr && newArtMethod != nullptr) {
-        overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+        overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
         __android_log_print(ANDROID_LOG_INFO, "ARTful", "Replaced target method");
     } else {
         __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Failed to replace target method");
@@ -278,7 +298,7 @@ replaceAppMethodBySignature(JNIEnv* env, jobject /* this */,
     newArtMethod = hookArtMethod(env, newClassNameNative, newMethodNameNative, methodSignatureNative);
 
     if (targetArtMethod != nullptr && newArtMethod != nullptr) {
-        overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+        overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
         __android_log_print(ANDROID_LOG_INFO, "ARTful", "Replaced target method");
     } else {
         __android_log_print(ANDROID_LOG_DEBUG, "ARTful", "Failed to replace target method");
@@ -311,7 +331,7 @@ replaceGetRadioVersionByObject(JNIEnv* env, jobject /* this */, jobject newObjec
                                                    GET_RADIO_VERSION_SIGNATURE);
     void* newArtMethod = hookArtMethod(env, newObject);
 
-    overwriteArtStructureInMemory(getRadioVersionArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(env, getRadioVersionArtMethod, newArtMethod);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -329,7 +349,7 @@ replaceGetRadioVersionBySignature(JNIEnv* env, jobject /* this */,
                                        newMethodNameNative,
                                        GET_RADIO_VERSION_SIGNATURE);
 
-    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
 
     env->ReleaseStringUTFChars(newClassName, newClassNameNative);
     env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
@@ -346,7 +366,7 @@ replaceLogEByObject(JNIEnv* env, jobject /* this */, jobject newObject) {
                                           LOG_E_SIGNATURE);
     void* newArtMethod = hookArtMethod(env, newObject);
 
-    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -364,7 +384,7 @@ replaceLogEBySignature(JNIEnv* env, jobject /* this */,
                                        newMethodNameNative,
                                        LOG_E_SIGNATURE);
 
-    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
 
     env->ReleaseStringUTFChars(newClassName, newClassNameNative);
     env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
@@ -381,7 +401,7 @@ replaceToastMakeTextByObject(JNIEnv* env, jobject /* this */, jobject newObject)
                                           MAKE_TEXT_SIGNATURE);
     void* newArtMethod = hookArtMethod(env, newObject);
 
-    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -399,7 +419,7 @@ replaceToastMakeTextBySignature(JNIEnv* env, jobject /* this */,
                                        newMethodNameNative,
                                        MAKE_TEXT_SIGNATURE);
 
-    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
 
     env->ReleaseStringUTFChars(newClassName, newClassNameNative);
     env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
@@ -416,7 +436,7 @@ replacePatternMatchesByObject(JNIEnv* env, jobject /* this */, jobject newObject
                                           MATCHES_SIGNATURE);
     void* newArtMethod = hookArtMethod(env, newObject);
 
-    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -434,7 +454,7 @@ replacePatternMatchesBySignature(JNIEnv* env, jobject /* this */,
                                        newMethodNameNative,
                                        MATCHES_SIGNATURE);
 
-    overwriteArtStructureInMemory(targetArtMethod, newArtMethod);
+    overwriteArtStructureInMemory(env, targetArtMethod, newArtMethod);
 
     env->ReleaseStringUTFChars(newClassName, newClassNameNative);
     env->ReleaseStringUTFChars(newMethodName, newMethodNameNative);
